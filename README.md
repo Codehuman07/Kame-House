@@ -37,7 +37,7 @@ ratings, save favourites and track what I've already watched.
 
 Clone the repo and open index.html. Thats it honestly.
 ```bash
-git clone https://github.com/yourusername/kamehouse.git
+git clone https://github.com/CodeHuman07/kamehouse.git
 cd kamehouse
 ```
 
