@@ -1,0 +1,234 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: 'Inter', sans-serif;;
+    background-color: black;
+    color: white;
+    line-height: 1.6;
+}
+
+/* navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 3%;
+    padding-right: 3%;
+    background-color: black;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+}
+
+.logoimg {
+    height: 90px;
+    width: auto;
+    display: block;
+}
+
+.logotext {
+    font-family: 'Karantina', system-ui;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: #f97316;
+    line-height: 1;
+    margin-top: 5px;
+}
+
+.navlinks {
+    display: flex;
+    gap: 4rem;
+}
+
+.navlinks a {
+    color: white;
+    text-decoration: none;
+    font-family: 'Just Another Hand', cursive;
+    font-weight: 600;
+    font-size: 3.5rem;
+    position: relative;
+    top: 10px;
+    transition: color 0.3s ease;
+}
+
+.navlinks a:hover {
+    color: #f97316;
+}
+
+.authbuttons {
+    display: flex;
+    gap: 2rem;
+}
+
+.authbuttons button {
+    font-family: 'Denk One', sans-serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btnsignup {
+    background-color: #f97316;
+    color: white;
+    border: 2px solid #f97316;
+}
+
+.btnsignup:hover {
+    background-color: transparent;
+    color: #f97316;
+}
+
+.btnlogin {
+    background-color: transparent;
+    color: #f97316;
+    border: 2px solid #f97316;
+}
+
+.btnlogin:hover {
+    background-color: #f97316;
+    color: white;
+}
+
+/* hero(main section) */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url('../Assets/landingPage%20BG.jpeg'); 
+    background-size: cover;
+    background-position: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(72, 72, 72, 0.65);
+    z-index: 1;
+}
+
+.herocontent {
+    position: relative;
+    z-index: 2;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.heroline1 {
+    font-family: 'Denk One', sans-serif;
+    font-size: 5rem;
+    color: white;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.heroline2 {
+    font-family: 'Denk One', sans-serif;
+    font-size: 6.5rem;
+    color: #f97316;
+    letter-spacing: 4px;
+    margin-bottom: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.herobuttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.herobuttons a {
+    display: inline-block;
+    font-family: 'Denk One', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 1.25rem 2.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btnbrowse {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btnbrowse:hover {
+    background-color: white;
+    color: black;
+}
+
+.btnfavorites {
+    background-color: #f97316;
+    color: white;
+    border: 2px solid #f97316;
+}
+
+.btnfavorites:hover {
+    background-color: transparent;
+    color: #f97316;
+}
+
+
+
+
+/* responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+        border-bottom: none;
+    }
+    
+    .navlinks {
+        gap: 1.5rem;
+    }
+    
+    .heroline1 {
+        font-size: 3rem;
+    }
+    
+    .heroline2 {
+        font-size: 4rem;
+    }
+    
+    .herobuttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
