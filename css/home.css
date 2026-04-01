@@ -1,0 +1,9 @@
+body {
+    background: #111111;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+}
+
+.homemain {
+    min-height: 100vh;
+}
