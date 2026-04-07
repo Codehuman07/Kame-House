@@ -1,19 +1,105 @@
-setTimeout(async () => {
-  try {
-    const response = await fetch("https://api.jikan.moe/v4/top/anime?page=1");
-    const data = await response.json();
-    const grid = document.getElementById("grid");
-    grid.innerHTML = data.data.map(anime => `
-      <div>
-        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-        <h3>${anime.title}</h3>
-        <p>Score: ${anime.score}</p>
-        <p>Episodes: ${anime.episodes}</p>
-        <p>Status: ${anime.status}</p>
-      </div>
-    `).join("");
-    
-  } catch (error) {
-    console.error("Error fetching anime:", error);
-  }
-}, 100);
+var genres = [
+    { name: "Top Anime", url: "https://api.jikan.moe/v4/top/anime" },
+    { name: "Action", url: "https://api.jikan.moe/v4/anime?genres=1" },
+    { name: "Comedy", url: "https://api.jikan.moe/v4/anime?genres=4" },
+    { name: "Fantasy", url: "https://api.jikan.moe/v4/anime?genres=10" }
+];
+
+var container = document.getElementById("rows-container");
+
+// loop through genres (simple loop, no fancy stuff)
+for (var i = 0; i < genres.length; i++) {
+    loadRow(genres[i].name, genres[i].url, i);
+}
+
+function loadRow(name, url, index) {
+
+    // delay so api doesnt break
+    setTimeout(function () {
+
+        var section = document.createElement("div");
+        section.className = "row-section";
+
+        var heading = document.createElement("h2");
+        heading.className = "row-heading";
+        heading.innerText = name;
+        section.appendChild(heading);
+
+        var loading = document.createElement("p");
+        loading.className = "row-loading";
+        loading.innerText = "Loading...";
+        section.appendChild(loading);
+
+        container.appendChild(section);
+
+        fetch(url)
+            .then(function (res) {
+                return res.json();
+            })
+            .then(function (data) {
+
+                // remove loading safely
+                if (section.contains(loading)) {
+                    section.removeChild(loading);
+                }
+
+                // Check if data.data exists (Jikan API can return errors/null)
+                var list = data.data;
+                if (!list || list.length === 0) {
+                    var empty = document.createElement("p");
+                    empty.className = "row-error";
+                    empty.innerText = "Results not found";
+                    section.appendChild(empty);
+                    return;
+                }
+
+                // filter (remove null images)
+                var newList = list.filter(function (a) {
+                    return a && a.images && a.images.jpg && a.images.jpg.image_url;
+                });
+
+                var row = document.createElement("div");
+                row.className = "anime-row";
+
+                // map to create cards
+                var cards = newList.map(function (anime) {
+
+                    var card = document.createElement("div");
+                    card.className = "anime-card";
+
+                    var img = document.createElement("img");
+                    img.src = anime.images.jpg.image_url;
+                    img.alt = anime.title;
+                    img.loading = "lazy"; // Better performance
+
+                    var title = document.createElement("p");
+                    title.className = "anime-title";
+                    title.innerText = anime.title;
+
+                    card.appendChild(img);
+                    card.appendChild(title);
+
+                    return card;
+                });
+
+                // append cards
+                for (var j = 0; j < cards.length; j++) {
+                    row.appendChild(cards[j]);
+                }
+
+                section.appendChild(row);
+
+            })
+            .catch(function (err) {
+                console.error("Row Load Error:", err);
+                if (section.contains(loading)) {
+                    section.removeChild(loading);
+                }
+                var error = document.createElement("p");
+                error.className = "row-error";
+                error.innerText = "Network Error";
+                section.appendChild(error);
+            });
+
+    }, index * 1000); // 1-second delay is standard for Jikan
+}
