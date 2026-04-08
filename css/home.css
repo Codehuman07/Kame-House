@@ -25,6 +25,9 @@ body {
 /* === Page Header === */
 .topbar {
     padding: 2rem 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .heading {
@@ -34,6 +37,18 @@ body {
     color: var(--netflix-red);
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     margin: 0;
+}
+
+.sorter {
+    background: #111111;
+    border: 1.5px solid var(--netflix-red);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 9px 14px;
+    font-size: 14px;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 /* === Row Sections === */

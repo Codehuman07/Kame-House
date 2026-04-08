@@ -1,16 +1,54 @@
-var genres = [
-    { name: "Top Anime", url: "https://api.jikan.moe/v4/top/anime" },
-    { name: "Action", url: "https://api.jikan.moe/v4/anime?genres=1" },
-    { name: "Comedy", url: "https://api.jikan.moe/v4/anime?genres=4" },
-    { name: "Fantasy", url: "https://api.jikan.moe/v4/anime?genres=10" }
-];
-
 var container = document.getElementById("rows-container");
 
-// loop through genres (simple loop, no fancy stuff)
-for (var i = 0; i < genres.length; i++) {
-    loadRow(genres[i].name, genres[i].url, i);
+var currentUrl = "https://api.jikan.moe/v4/top/anime";
+
+// Wrap the existing fetch code inside a function called loadAnime
+function loadAnime(url) {
+    // Before fetching, clear the grid and put the 8 skeleton divs back so the loading state shows again
+    container.innerHTML = `
+        <div style="display:flex; gap:16px; padding: 20px 4%;">
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+            <div class="anime-card" style="background:#222; height:250px;"></div>
+        </div>
+    `;
+
+    // after a short delay, clear skeletons and put the actual data
+    setTimeout(function() {
+        container.innerHTML = "";
+
+        var genres = [
+            { name: "Top Anime", url: url }, // replace Top Anime url with the new url
+            { name: "Action", url: "https://api.jikan.moe/v4/anime?genres=1" },
+            { name: "Comedy", url: "https://api.jikan.moe/v4/anime?genres=4" },
+            { name: "Fantasy", url: "https://api.jikan.moe/v4/anime?genres=10" }
+        ];
+
+        var sorter = document.getElementById("sorter");
+        if (sorter) {
+            genres[0].name = sorter.options[sorter.selectedIndex].text;
+        }
+
+        // loop through genres (simple loop, no fancy stuff)
+        for (var i = 0; i < genres.length; i++) {
+            loadRow(genres[i].name, genres[i].url, i);
+        }
+    }, 100);
 }
+
+// On page load call loadAnime(currentUrl)
+loadAnime(currentUrl);
+
+// Add an event listener on document.getElementById("sorter")
+document.getElementById("sorter").addEventListener("change", function () {
+    currentUrl = this.value;
+    loadAnime(currentUrl);
+});
 
 function loadRow(name, url, index) {
 

@@ -32,6 +32,13 @@
 
         <div class="topbar">
             <h2 class="heading">DISCOVER ANIME</h2>
+            <select id="sorter" class="sorter">
+              <option value="https://api.jikan.moe/v4/top/anime">Top Rated</option>
+              <option value="https://api.jikan.moe/v4/top/anime?filter=bypopularity">Most Popular</option>
+              <option value="https://api.jikan.moe/v4/top/anime?filter=favorite">Most Favorited</option>
+              <option value="https://api.jikan.moe/v4/top/anime?filter=airing">Currently Airing</option>
+              <option value="https://api.jikan.moe/v4/top/anime?filter=upcoming">Upcoming</option>
+            </select>
         </div>
 
         <div id="rows-container" class="rows-container">
