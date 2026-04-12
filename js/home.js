@@ -1,10 +1,8 @@
-var container = document.getElementById("rows-container");
+let container = document.getElementById("rows-container");
 
-var currentUrl = "https://api.jikan.moe/v4/top/anime";
+let currentUrl = "https://api.jikan.moe/v4/top/anime";
 
-// Wrap the existing fetch code inside a function called loadAnime
 function loadAnime(url) {
-    // Before fetching, clear the grid and put the 8 skeleton divs back so the loading state shows again
     container.innerHTML = `
         <div style="display:flex; gap:16px; padding: 20px 4%;">
             <div class="anime-card" style="background:#222; height:250px;"></div>
@@ -18,33 +16,29 @@ function loadAnime(url) {
         </div>
     `;
 
-    // after a short delay, clear skeletons and put the actual data
     setTimeout(function() {
         container.innerHTML = "";
 
-        var genres = [
-            { name: "Top Anime", url: url }, // replace Top Anime url with the new url
+        let genres = [
+            { name: "Top Anime", url: url },
             { name: "Action", url: "https://api.jikan.moe/v4/anime?genres=1" },
             { name: "Comedy", url: "https://api.jikan.moe/v4/anime?genres=4" },
             { name: "Fantasy", url: "https://api.jikan.moe/v4/anime?genres=10" }
         ];
 
-        var sorter = document.getElementById("sorter");
+        let sorter = document.getElementById("sorter");
         if (sorter) {
             genres[0].name = sorter.options[sorter.selectedIndex].text;
         }
 
-        // loop through genres (simple loop, no fancy stuff)
-        for (var i = 0; i < genres.length; i++) {
+        for (let i = 0; i < genres.length; i++) {
             loadRow(genres[i].name, genres[i].url, i);
         }
     }, 100);
 }
 
-// On page load call loadAnime(currentUrl)
 loadAnime(currentUrl);
 
-// Add an event listener on document.getElementById("sorter")
 document.getElementById("sorter").addEventListener("change", function () {
     currentUrl = this.value;
     loadAnime(currentUrl);
@@ -52,18 +46,17 @@ document.getElementById("sorter").addEventListener("change", function () {
 
 function loadRow(name, url, index) {
 
-    // delay so api doesnt break
     setTimeout(function () {
 
-        var section = document.createElement("div");
+        let section = document.createElement("div");
         section.className = "row-section";
 
-        var heading = document.createElement("h2");
+        let heading = document.createElement("h2");
         heading.className = "row-heading";
         heading.innerText = name;
         section.appendChild(heading);
 
-        var loading = document.createElement("p");
+        let loading = document.createElement("p");
         loading.className = "row-loading";
         loading.innerText = "Loading...";
         section.appendChild(loading);
@@ -76,56 +69,59 @@ function loadRow(name, url, index) {
             })
             .then(function (data) {
 
-                // remove loading safely
                 if (section.contains(loading)) {
                     section.removeChild(loading);
                 }
 
-                // Check if data.data exists (Jikan API can return errors/null)
-                var list = data.data;
+                let list = data.data;
                 if (!list || list.length === 0) {
-                    var empty = document.createElement("p");
+                    let empty = document.createElement("p");
                     empty.className = "row-error";
                     empty.innerText = "Results not found";
                     section.appendChild(empty);
                     return;
                 }
 
-                // filter (remove null images)
-                var newList = list.filter(function (a) {
+                let newList = list.filter(function (a) {
                     return a && a.images && a.images.jpg && a.images.jpg.image_url;
                 });
 
-                var row = document.createElement("div");
+                let row = document.createElement("div");
                 row.className = "anime-row";
 
-                // map to create cards
-                var cards = newList.map(function (anime) {
+                let cards = newList.map(function (anime) {
 
-                    var card = document.createElement("div");
+                    let card = document.createElement("div");
                     card.className = "anime-card";
 
-                    var img = document.createElement("img");
+                    let img = document.createElement("img");
                     img.src = anime.images.jpg.image_url;
                     img.alt = anime.title;
-                    img.loading = "lazy"; // Better performance
+                    img.loading = "lazy";
 
-                    var title = document.createElement("p");
+                    let title = document.createElement("p");
                     title.className = "anime-title";
                     title.innerText = anime.title;
 
+                    let btnDiv = document.createElement("div");
+                    let cleanTitle = anime.title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    btnDiv.innerHTML = "<button class='btnfav' data-id='" + anime.mal_id + "' onclick=\"toggleFav(" + anime.mal_id + ", '" + cleanTitle + "', '" + anime.images.jpg.image_url + "', this)\">+</button>";
+                    let btn = btnDiv.firstChild;
+
                     card.appendChild(img);
                     card.appendChild(title);
+                    card.appendChild(btn);
 
                     return card;
                 });
 
-                // append cards
-                for (var j = 0; j < cards.length; j++) {
+                for (let j = 0; j < cards.length; j++) {
                     row.appendChild(cards[j]);
                 }
 
                 section.appendChild(row);
+
+                checkFavs();
 
             })
             .catch(function (err) {
@@ -133,11 +129,71 @@ function loadRow(name, url, index) {
                 if (section.contains(loading)) {
                     section.removeChild(loading);
                 }
-                var error = document.createElement("p");
+                let error = document.createElement("p");
                 error.className = "row-error";
                 error.innerText = "Network Error";
                 section.appendChild(error);
             });
 
-    }, index * 1000); // 1-second delay is standard for Jikan
+    }, index * 1000);
+}
+
+function toggleFav(id, title, imgUrl, buttonElement) {
+    let favsString = localStorage.getItem("kamehouse-favorites");
+    let favs = [];
+    
+    if (favsString !== null) {
+        favs = JSON.parse(favsString);
+    }
+    
+    let existingFav = null;
+    for (let i = 0; i < favs.length; i++) {
+        if (favs[i].mal_id === id) {
+            existingFav = favs[i];
+            break;
+        }
+    }
+    
+    if (!existingFav) {
+        let newFav = {
+            mal_id: id,
+            title: title,
+            image: imgUrl
+        };
+        favs.push(newFav);
+        buttonElement.innerText = "✓";
+    } else {
+        let newFavs = favs.filter(function(anime) {
+            return anime.mal_id !== id;
+        });
+        favs = newFavs;
+        buttonElement.innerText = "+";
+    }
+    
+    localStorage.setItem("kamehouse-favorites", JSON.stringify(favs));
+}
+
+function checkFavs() {
+    let favsString = localStorage.getItem("kamehouse-favorites");
+    if (favsString === null) return;
+    
+    let favs = JSON.parse(favsString);
+    let buttons = document.getElementsByClassName("btnfav");
+    
+    for (let i = 0; i < buttons.length; i++) {
+        let btn = buttons[i];
+        let btnId = parseInt(btn.getAttribute("data-id"));
+        
+        let isFav = false;
+        for (let j = 0; j < favs.length; j++) {
+            if (favs[j].mal_id === btnId) {
+                isFav = true;
+                break;
+            }
+        }
+        
+        if (isFav) {
+            btn.innerText = "✓";
+        }
+    }
 }

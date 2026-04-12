@@ -13,7 +13,6 @@ body {
     line-height: 1.6;
 }
 
-/* navbar */
 .navbar {
     position: fixed;
     top: 0;
@@ -113,7 +112,6 @@ body {
     color: white;
 }
 
-/* hero(main section) */
 .hero {
     position: relative;
     height: 100vh;
@@ -206,7 +204,6 @@ body {
 
 
 
-/* footer */
 .footer {
     background: #1a1a1a;
     border-top: 3px solid #f97316;
@@ -274,7 +271,6 @@ body {
     border-radius: 20px;
 }
 
-/* responsiveness */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;

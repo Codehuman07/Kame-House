@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kame's House - Home</title>
+    <title>Kame's House - Favorites</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,7 @@
     
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/favorites.css">
 </head>
 <body>
     <header class="navbar">
@@ -29,24 +30,13 @@
     </header>
 
     <main class="homemain">
-
         <div class="topbar">
-            <h2 class="heading">DISCOVER ANIME</h2>
-            <select id="sorter" class="sorter">
-                <option value="https://api.jikan.moe/v4/top/anime">Top Rated</option>
-                <option value="https://api.jikan.moe/v4/top/anime?filter=bypopularity">Most Popular</option>
-                <option value="https://api.jikan.moe/v4/top/anime?filter=favorite">Most Favorited</option>
-                <option value="https://api.jikan.moe/v4/top/anime?filter=airing">Currently Airing</option>
-                <option value="https://api.jikan.moe/v4/top/anime?filter=upcoming">Upcoming</option>
-            </select>
+          <h2 class="heading">MY <em>FAVORITES</em></h2>
+          <span id="count" class="count"></span>
         </div>
-
-        <div id="rows-container" class="rows-container">
-        </div>
-
+        <div id="grid" class="grid"></div>
+        <p id="emptymsg" class="emptymsg">You have not added any favorites yet.</p>
     </main>
-
-
 
     <footer class="footer">
         <div class="footertop">
@@ -74,6 +64,6 @@
             <div class="badge">Powered by Jikan API</div>
         </div>
     </footer>
-    <script src="../js/home.js"></script>
+    <script src="../js/favorites.js"></script>
 </body>
 </html>
