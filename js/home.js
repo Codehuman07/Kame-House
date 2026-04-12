@@ -3,18 +3,12 @@ let container = document.getElementById("rows-container");
 let currentUrl = "https://api.jikan.moe/v4/top/anime";
 
 function loadAnime(url) {
-    container.innerHTML = `
-        <div style="display:flex; gap:16px; padding: 20px 4%;">
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-            <div class="anime-card" style="background:#222; height:250px;"></div>
-        </div>
-    `;
+    let loadingHTML = "<div style='display:flex; gap:16px; padding: 20px 4%;'>";
+    for (let i = 0; i < 8; i++) {
+        loadingHTML += "<div class='anime-card' style='background:#222; height:250px;'></div>";
+    }
+    loadingHTML += "</div>";
+    container.innerHTML = loadingHTML;
 
     setTimeout(function() {
         container.innerHTML = "";
@@ -31,36 +25,31 @@ function loadAnime(url) {
             genres[0].name = sorter.options[sorter.selectedIndex].text;
         }
 
-        for (let i = 0; i < genres.length; i++) {
-            loadRow(genres[i].name, genres[i].url, i);
-        }
+        genres.forEach(function(genre, i) {
+            loadRow(genre.name, genre.url, i);
+        });
     }, 100);
 }
 
 loadAnime(currentUrl);
 
-document.getElementById("sorter").addEventListener("change", function () {
-    currentUrl = this.value;
-    loadAnime(currentUrl);
-});
+let sorterDropdown = document.getElementById("sorter");
+if (sorterDropdown) {
+    sorterDropdown.addEventListener("change", function () {
+        currentUrl = this.value;
+        loadAnime(currentUrl);
+    });
+}
 
 function loadRow(name, url, index) {
-
     setTimeout(function () {
-
         let section = document.createElement("div");
         section.className = "row-section";
 
-        let heading = document.createElement("h2");
-        heading.className = "row-heading";
-        heading.innerText = name;
-        section.appendChild(heading);
-
-        let loading = document.createElement("p");
-        loading.className = "row-loading";
-        loading.innerText = "Loading...";
-        section.appendChild(loading);
-
+        let headingHTML = "<h2 class='row-heading'>" + name + "</h2>";
+        let loadingHTML = "<p class='row-loading' id='loading-" + index + "'>Loading...</p>";
+        
+        section.innerHTML = headingHTML + loadingHTML;
         container.appendChild(section);
 
         fetch(url)
@@ -68,71 +57,50 @@ function loadRow(name, url, index) {
                 return res.json();
             })
             .then(function (data) {
-
-                if (section.contains(loading)) {
-                    section.removeChild(loading);
+                let loadingEl = document.getElementById("loading-" + index);
+                if (loadingEl) {
+                    loadingEl.style.display = "none";
                 }
 
                 let list = data.data;
-                if (!list || list.length === 0) {
-                    let empty = document.createElement("p");
-                    empty.className = "row-error";
-                    empty.innerText = "Results not found";
-                    section.appendChild(empty);
+                if (list == null || list.length === 0) {
+                    section.innerHTML += "<p class='row-error'>Results not found</p>";
                     return;
                 }
 
-                let newList = list.filter(function (a) {
-                    return a && a.images && a.images.jpg && a.images.jpg.image_url;
+                let tempArr = list.filter(function(a) {
+                    return a != null && a.images != null && a.images.jpg != null && a.images.jpg.image_url != null;
                 });
 
-                let row = document.createElement("div");
-                row.className = "anime-row";
+                let rowHTML = "<div class='anime-row'>" + tempArr.map(function(anime) {
+                    let safeTitle = "";
+                    if (anime.title != null) {
+                        safeTitle = anime.title.split("'").join("\\'").split('"').join("&quot;");
+                    }
+                    
+                    let cardHTML = "<div class='anime-card'>";
+                    cardHTML += "<img src='" + anime.images.jpg.image_url + "'>";
+                    cardHTML += "<p class='anime-title'>" + anime.title + "</p>";
+                    
+                    let onclickFunc = "toggleFav(" + anime.mal_id + ", '" + safeTitle + "', '" + anime.images.jpg.image_url + "', this)";
+                    cardHTML += "<button class='btnfav' data-id='" + anime.mal_id + "' onclick=\"" + onclickFunc + "\">+</button>";
+                    
+                    cardHTML += "</div>";
+                    return cardHTML;
+                }).join('') + "</div>";
 
-                let cards = newList.map(function (anime) {
-
-                    let card = document.createElement("div");
-                    card.className = "anime-card";
-
-                    let img = document.createElement("img");
-                    img.src = anime.images.jpg.image_url;
-                    img.alt = anime.title;
-                    img.loading = "lazy";
-
-                    let title = document.createElement("p");
-                    title.className = "anime-title";
-                    title.innerText = anime.title;
-
-                    let btnDiv = document.createElement("div");
-                    let cleanTitle = anime.title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                    btnDiv.innerHTML = "<button class='btnfav' data-id='" + anime.mal_id + "' onclick=\"toggleFav(" + anime.mal_id + ", '" + cleanTitle + "', '" + anime.images.jpg.image_url + "', this)\">+</button>";
-                    let btn = btnDiv.firstChild;
-
-                    card.appendChild(img);
-                    card.appendChild(title);
-                    card.appendChild(btn);
-
-                    return card;
-                });
-
-                for (let j = 0; j < cards.length; j++) {
-                    row.appendChild(cards[j]);
-                }
-
-                section.appendChild(row);
+                section.innerHTML += rowHTML;
 
                 checkFavs();
 
             })
             .catch(function (err) {
-                console.error("Row Load Error:", err);
-                if (section.contains(loading)) {
-                    section.removeChild(loading);
+                console.log("error");
+                let loadingEl = document.getElementById("loading-" + index);
+                if (loadingEl) {
+                    loadingEl.style.display = "none";
                 }
-                let error = document.createElement("p");
-                error.className = "row-error";
-                error.innerText = "Network Error";
-                section.appendChild(error);
+                section.innerHTML += "<p class='row-error'>Network Error</p>";
             });
 
     }, index * 1000);
@@ -146,15 +114,11 @@ function toggleFav(id, title, imgUrl, buttonElement) {
         favs = JSON.parse(favsString);
     }
     
-    let existingFav = null;
-    for (let i = 0; i < favs.length; i++) {
-        if (favs[i].mal_id === id) {
-            existingFav = favs[i];
-            break;
-        }
-    }
+    let existingFav = favs.find(function(anime) {
+        return anime.mal_id === id;
+    });
     
-    if (!existingFav) {
+    if (existingFav == null) {
         let newFav = {
             mal_id: id,
             title: title,
@@ -175,7 +139,9 @@ function toggleFav(id, title, imgUrl, buttonElement) {
 
 function checkFavs() {
     let favsString = localStorage.getItem("kamehouse-favorites");
-    if (favsString === null) return;
+    if (favsString === null) {
+        return;
+    }
     
     let favs = JSON.parse(favsString);
     let buttons = document.getElementsByClassName("btnfav");
@@ -184,13 +150,9 @@ function checkFavs() {
         let btn = buttons[i];
         let btnId = parseInt(btn.getAttribute("data-id"));
         
-        let isFav = false;
-        for (let j = 0; j < favs.length; j++) {
-            if (favs[j].mal_id === btnId) {
-                isFav = true;
-                break;
-            }
-        }
+        let isFav = favs.some(function(anime) {
+            return anime.mal_id === btnId;
+        });
         
         if (isFav) {
             btn.innerText = "✓";

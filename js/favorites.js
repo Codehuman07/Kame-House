@@ -21,17 +21,21 @@ function loadFavs() {
     emptymsg.style.display = "none";
     countObj.innerText = favs.length + " favorites";
     
-    let cards = "";
-    favs.forEach(function(anime) {
-      let safeTitle = anime.title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-      cards += "<div class='card'>";
-      cards += "<img class='poster' src='" + anime.image + "' alt='" + safeTitle + "'>";
-      cards += "<div class='info'>";
-      cards += "<p class='title'>" + anime.title + "</p>";
-      cards += "<button class='btnremove' onclick='removeFav(" + anime.mal_id + ")'>Remove</button>";
-      cards += "</div>";
-      cards += "</div>";
-    });
+    let cards = favs.map(function(anime) {
+      let safeTitle = "";
+      if (anime.title != null) {
+          safeTitle = anime.title.split("'").join("\\'").split('"').join("&quot;");
+      }
+      
+      let cardHTML = "<div class='card'>";
+      cardHTML += "<img class='poster' src='" + anime.image + "'>";
+      cardHTML += "<div class='info'>";
+      cardHTML += "<p class='title'>" + anime.title + "</p>";
+      cardHTML += "<button class='btnremove' onclick='removeFav(" + anime.mal_id + ")'>Remove</button>";
+      cardHTML += "</div>";
+      cardHTML += "</div>";
+      return cardHTML;
+    }).join('');
     document.getElementById("grid").innerHTML = cards;
 }
 
