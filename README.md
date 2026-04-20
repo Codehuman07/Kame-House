@@ -17,15 +17,11 @@ ratings, save favourites and track what I've already watched.
 
 ## What it does
 
-- Search anime by name
 - Filter by genre
 - Sort by score or popularity
 - Save favourites
 - Mark anime as watched
 - Dark mode and light mode
-- Click on any anime to see full details
-- Random anime button if you're feeling lucky
-- Opens Crunchyroll for that anime directly
 
 ## Built with
 
